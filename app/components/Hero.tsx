@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const TOTAL_FRAMES = 236;
+const KEYFRAME_STEP = 4; // Pass 1: Every 4th frame (~59 frames, ~4 MB). Covers full 360 spin in 1-2s.
+const CONCURRENCY_LIMIT = 6; // Controlled parallel HTTP/2 download pool
 const DAMPING_FACTOR = 0.04; // Slower, more luxurious Apple-grade inertia momentum
 
 const getFrameUrl = (index: number) =>
@@ -27,6 +29,11 @@ export default function Hero() {
   const isLoopRunningRef = useRef<boolean>(false);
   const animationFrameIdRef = useRef<number | null>(null);
   const preloaderInitializedRef = useRef<boolean>(false);
+
+  // High-performance concurrency pool & priority queue refs
+  const loadingSetRef = useRef<Set<number>>(new Set());
+  const pendingQueueRef = useRef<number[]>([]);
+  const activeCountRef = useRef<number>(0);
 
   // Header & Overlay State
   const [isLoaded, setIsLoaded] = useState(false);
@@ -148,7 +155,65 @@ export default function Hero() {
     animationFrameIdRef.current = requestAnimationFrame(animate);
   }, [renderFrame]);
 
-  // Update target frame based on scroll offset
+  // Load and decode single frame
+  const loadAndDecodeFrame = useCallback(async (index: number) => {
+    if (imagesRef.current[index]?.complete && imagesRef.current[index].naturalWidth > 0) {
+      return;
+    }
+
+    const img = new window.Image();
+    img.src = getFrameUrl(index);
+    try {
+      if (img.decode) {
+        await img.decode();
+      }
+    } catch {
+      // Fallback for decode interruption or aborted decode
+    }
+
+    imagesRef.current[index] = img;
+
+    // If the canvas is currently waiting for or near this frame, render immediately
+    const currentRounded = Math.round(currentFrameRef.current);
+    if (currentRounded === index || Math.abs(currentRounded - index) <= 1) {
+      renderFrame(currentRounded);
+    }
+  }, [renderFrame]);
+
+  // Parallel pool worker runner
+  const processQueue = useCallback(() => {
+    while (activeCountRef.current < CONCURRENCY_LIMIT && pendingQueueRef.current.length > 0) {
+      const nextIndex = pendingQueueRef.current.shift();
+      if (nextIndex === undefined) break;
+
+      activeCountRef.current++;
+      loadAndDecodeFrame(nextIndex).finally(() => {
+        activeCountRef.current--;
+        processQueue();
+      });
+    }
+  }, [loadAndDecodeFrame]);
+
+  // Enqueue frames with optional priority (prepending)
+  const enqueueFrames = useCallback((indices: number[], isPriority = false) => {
+    const toAdd = indices.filter(
+      (idx) => idx >= 0 && idx < TOTAL_FRAMES && !loadingSetRef.current.has(idx)
+    );
+
+    toAdd.forEach((idx) => loadingSetRef.current.add(idx));
+
+    if (toAdd.length === 0) return;
+
+    if (isPriority) {
+      pendingQueueRef.current = [...toAdd, ...pendingQueueRef.current];
+    } else {
+      pendingQueueRef.current.push(...toAdd);
+    }
+
+    processQueue();
+  }, [processQueue]);
+
+  // Update target frame based on scroll offset & prioritize immediate neighbor frames
   const updateScrollProgress = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -163,11 +228,25 @@ export default function Hero() {
     }
 
     const progress = Math.max(0, Math.min(1, -rect.top / scrollableHeight));
-    targetFrameRef.current = progress * (TOTAL_FRAMES - 1);
+    const target = progress * (TOTAL_FRAMES - 1);
+    targetFrameRef.current = target;
     startAnimationLoop();
-  }, [startAnimationLoop]);
 
-  // Async frame preloader
+    // On-demand priority: immediately load neighbors around the current scroll target
+    const center = Math.round(target);
+    const immediatePriority: number[] = [];
+    for (let offset = -4; offset <= 4; offset++) {
+      const idx = center + offset;
+      if (idx >= 0 && idx < TOTAL_FRAMES && !loadingSetRef.current.has(idx)) {
+        immediatePriority.push(idx);
+      }
+    }
+    if (immediatePriority.length > 0) {
+      enqueueFrames(immediatePriority, true);
+    }
+  }, [startAnimationLoop, enqueueFrames]);
+
+  // Two-pass frame preloader with concurrency pool
   useEffect(() => {
     if (preloaderInitializedRef.current) return;
     preloaderInitializedRef.current = true;
@@ -175,36 +254,34 @@ export default function Hero() {
     const images: HTMLImageElement[] = new Array(TOTAL_FRAMES);
     imagesRef.current = images;
 
-    const loadAndDecodeFrame = async (index: number) => {
-      const img = new window.Image();
-      img.src = getFrameUrl(index);
-      try {
-        if (img.decode) {
-          await img.decode();
-        }
-      } catch {
-        // Fallback for decode interruption
-      }
-      images[index] = img;
-      if (Math.round(currentFrameRef.current) === index) {
-        renderFrame(index);
-      }
-    };
-
+    // 1. Immediately load frame 0 for instant hero visual
+    loadingSetRef.current.add(0);
     loadAndDecodeFrame(0).then(() => {
       handleResize();
       renderFrame(0);
       setIsLoaded(true);
-    });
 
-    const preloadAll = async () => {
-      for (let i = 1; i < TOTAL_FRAMES; i++) {
-        await loadAndDecodeFrame(i);
+      // 2. PASS 1: Keyframes (every 4th frame: 0, 4, 8, 12, ... 235)
+      // Only ~59 frames (~4 MB), finishes in 1-2s and covers full 360 spin!
+      const keyframes: number[] = [];
+      for (let i = KEYFRAME_STEP; i < TOTAL_FRAMES; i += KEYFRAME_STEP) {
+        keyframes.push(i);
       }
-    };
+      if (!keyframes.includes(TOTAL_FRAMES - 1)) {
+        keyframes.push(TOTAL_FRAMES - 1);
+      }
+      enqueueFrames(keyframes, false);
 
-    preloadAll();
-  }, [handleResize, renderFrame]);
+      // 3. PASS 2: Background In-Between Fill (remaining frames)
+      const remaining: number[] = [];
+      for (let i = 1; i < TOTAL_FRAMES; i++) {
+        if (i % KEYFRAME_STEP !== 0 && i !== TOTAL_FRAMES - 1) {
+          remaining.push(i);
+        }
+      }
+      enqueueFrames(remaining, false);
+    });
+  }, [handleResize, renderFrame, loadAndDecodeFrame, enqueueFrames]);
 
   // IntersectionObserver to detect when user scrolls past hero (observes #about section)
   useEffect(() => {

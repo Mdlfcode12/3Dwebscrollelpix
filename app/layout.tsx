@@ -35,6 +35,13 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link
+          rel="preload"
+          href="/frames/ezgif-frame-001.webp"
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
         <meta name="theme-color" content="#181818" />
       </head>
       <body className="min-h-full flex flex-col bg-[#050806] text-white font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
