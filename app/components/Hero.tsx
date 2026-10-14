@@ -7,8 +7,10 @@ const KEYFRAME_STEP = 4; // Pass 1: Every 4th frame (~59 frames, ~4 MB). Covers 
 const CONCURRENCY_LIMIT = 6; // Controlled parallel HTTP/2 download pool
 const DAMPING_FACTOR = 0.04; // Slower, more luxurious Apple-grade inertia momentum
 
-const getFrameUrl = (index: number) =>
-  `/frames/ezgif-frame-${String(index + 1).padStart(3, "0")}.webp`;
+const getFrameUrl = (index: number, isMobile = false) => {
+  const folder = isMobile ? "frames-mobile" : "frames";
+  return `/${folder}/ezgif-frame-${String(index + 1).padStart(3, "0")}.webp`;
+};
 
 const NAV_ITEMS = [
   { label: "01  About", id: "about" },
@@ -29,6 +31,9 @@ export default function Hero() {
   const isLoopRunningRef = useRef<boolean>(false);
   const animationFrameIdRef = useRef<number | null>(null);
   const preloaderInitializedRef = useRef<boolean>(false);
+
+  // Device resolution mode ref (locked on mount to avoid double downloads)
+  const isMobileRef = useRef<boolean>(false);
 
   // High-performance concurrency pool & priority queue refs
   const loadingSetRef = useRef<Set<number>>(new Set());
@@ -162,7 +167,7 @@ export default function Hero() {
     }
 
     const img = new window.Image();
-    img.src = getFrameUrl(index);
+    img.src = getFrameUrl(index, isMobileRef.current);
     try {
       if (img.decode) {
         await img.decode();
@@ -250,6 +255,10 @@ export default function Hero() {
   useEffect(() => {
     if (preloaderInitializedRef.current) return;
     preloaderInitializedRef.current = true;
+
+    // Detect mobile viewport at mount time to lock asset resolution (prevents double downloads)
+    const isMobile = window.innerWidth < 768;
+    isMobileRef.current = isMobile;
 
     const images: HTMLImageElement[] = new Array(TOTAL_FRAMES);
     imagesRef.current = images;

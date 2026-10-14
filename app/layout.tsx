@@ -37,9 +37,18 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="preload"
+          href="/frames-mobile/ezgif-frame-001.webp"
+          as="image"
+          type="image/webp"
+          media="(max-width: 767px)"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
           href="/frames/ezgif-frame-001.webp"
           as="image"
           type="image/webp"
+          media="(min-width: 768px)"
           fetchPriority="high"
         />
         <meta name="theme-color" content="#181818" />
