@@ -6,7 +6,7 @@ const TOTAL_FRAMES = 236;
 const DAMPING_FACTOR = 0.04; // Slower, more luxurious Apple-grade inertia momentum
 
 const getFrameUrl = (index: number) =>
-  `/frames/ezgif-frame-${String(index + 1).padStart(3, "0")}.png`;
+  `/frames/ezgif-frame-${String(index + 1).padStart(3, "0")}.webp`;
 
 const NAV_ITEMS = [
   { label: "01  About", id: "about" },
