@@ -297,7 +297,7 @@ export default function Hero() {
     <div
       id="home"
       ref={containerRef}
-      className="relative w-full h-[550vh] bg-[#030303] text-white selection:bg-white/20"
+      className="relative w-full h-[380vh] md:h-[550vh] bg-[#030303] text-white selection:bg-white/20"
     >
       {/* Fixed Header Navigation - ALWAYS VISIBLE */}
       <header
@@ -345,10 +345,18 @@ export default function Hero() {
             target="_blank"
             rel="noopener noreferrer"
             className="font-sans text-[11px] font-medium uppercase tracking-[0.15em] text-[var(--on-dark)] hover:opacity-70 transition-opacity flex items-center gap-1.5"
+            aria-label="Direct WhatsApp contact"
           >
             <span className="hidden md:inline">WHATSAPP ↗</span>
-            <span className="md:hidden flex items-center justify-center w-7 h-7 rounded-full bg-[var(--wa-green)] text-white text-xs">
-              💬
+            <span className="md:hidden flex items-center justify-center w-7 h-7 rounded-full bg-[var(--wa-green)] text-white shadow-sm">
+              <svg
+                className="w-3.5 h-3.5 fill-white"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.461c-1.854 0-3.674-.499-5.267-1.442l-.377-.225-3.916 1.027 1.045-3.819-.247-.393c-1.036-1.648-1.583-3.557-1.582-5.51 0-5.632 4.582-10.214 10.215-10.214 2.73 0 5.295 1.063 7.222 2.992 1.928 1.929 2.99 4.493 2.99 7.223 0 5.633-4.583 10.214-10.073 10.214m0-18.665c-4.664 0-8.46 3.796-8.46 8.451 0 1.637.472 3.238 1.366 4.621l.542.846-.628 2.296 2.348-.616.818.486c1.33.79 2.854 1.206 4.414 1.206 4.664 0 8.46-3.796 8.46-8.451 0-4.656-3.8-8.452-8.86-8.452" />
+              </svg>
             </span>
           </a>
         </div>
@@ -376,7 +384,7 @@ export default function Hero() {
             </span>
 
             {/* H1 Heading (Only H1 on page) */}
-            <h1 className="font-serif font-light text-[clamp(56px,9vw,140px)] leading-[0.95] tracking-[-0.02em] text-[var(--on-dark)] break-words max-w-full">
+            <h1 className="font-serif font-light text-[clamp(38px,8.5vw,140px)] leading-[0.95] tracking-[-0.02em] text-[var(--on-dark)] break-words max-w-full">
               Elpix Properties
             </h1>
 
@@ -392,12 +400,12 @@ export default function Hero() {
       {/* Menu Overlay Modal */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 z-[200] bg-[var(--dark)] text-[var(--on-dark)] flex flex-col justify-between p-6 md:p-12 animate-fade-in"
+          className="fixed inset-0 z-[200] bg-[var(--dark)] text-[var(--on-dark)] flex flex-col justify-between p-6 md:p-12 overflow-y-auto max-h-screen animate-fade-in"
           role="dialog"
           aria-modal="true"
         >
           {/* Header row in modal */}
-          <div className="flex items-center justify-between border-b border-[var(--line-dark)] pb-6">
+          <div className="flex items-center justify-between border-b border-[var(--line-dark)] pb-6 shrink-0">
             <span className="font-sans text-[11px] uppercase tracking-[0.2em] text-[var(--eyebrow)]">
               NAVIGATION
             </span>
@@ -410,7 +418,7 @@ export default function Hero() {
           </div>
 
           {/* Large Numbered Navigation List */}
-          <div className="my-auto flex flex-col space-y-4 md:space-y-6">
+          <div className="my-auto py-8 flex flex-col space-y-4 md:space-y-6 shrink-0">
             {NAV_ITEMS.map((item) => {
               const isActive = activeSection === item.id;
               return (
@@ -431,7 +439,7 @@ export default function Hero() {
           </div>
 
           {/* Modal Footer */}
-          <div className="border-t border-[var(--line-dark)] pt-6 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-[10px] font-sans text-[var(--on-dark-muted)]">
+          <div className="border-t border-[var(--line-dark)] pt-6 flex flex-col sm:flex-row items-baseline justify-between gap-4 text-[10px] font-sans text-[var(--on-dark-muted)] shrink-0">
             <span>ELPIX PROPERTIES · JAKARTA, INDONESIA</span>
             <a
               href="https://wa.me/6282324393309"

@@ -3,9 +3,9 @@
 export default function FloatingWhatsApp() {
   return (
     <aside
-      className="fixed right-6 z-50 transition-all duration-300 pointer-events-auto"
+      className="fixed right-4 sm:right-6 z-50 transition-all duration-300 pointer-events-auto"
       style={{
-        bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))",
+        bottom: "calc(1.25rem + env(safe-area-inset-bottom, 0px))",
       }}
     >
       <a
@@ -13,10 +13,10 @@ export default function FloatingWhatsApp() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contact Elpix Properties on WhatsApp"
-        className="flex items-center gap-3 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-[var(--wa-green)] text-white shadow-xl shadow-black/20 hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200"
+        className="flex items-center justify-center p-3 sm:px-5 sm:py-3 rounded-full bg-[var(--wa-green)] text-white shadow-xl shadow-black/25 hover:scale-[1.04] active:scale-[0.98] transition-transform duration-200"
       >
         {/* Left: White WhatsApp icon in a translucent circle */}
-        <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+        <div className="w-6 h-6 sm:w-7 sm:h-7 sm:rounded-full sm:bg-white/20 flex items-center justify-center shrink-0">
           <svg
             className="w-4 h-4 fill-white"
             viewBox="0 0 24 24"
@@ -26,8 +26,8 @@ export default function FloatingWhatsApp() {
           </svg>
         </div>
 
-        {/* Right: Two lines of white text */}
-        <div className="flex flex-col text-left leading-tight">
+        {/* Right: Two lines of white text (hidden on mobile, visible on sm and up) */}
+        <div className="hidden sm:flex flex-col text-left leading-tight sm:ml-3">
           <span className="font-sans text-[9px] uppercase font-medium tracking-wider text-white/90">
             WHATSAPP
           </span>

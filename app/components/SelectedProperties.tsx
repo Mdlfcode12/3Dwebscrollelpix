@@ -83,14 +83,14 @@ export default function SelectedProperties() {
             >
               <div className="flex flex-col md:flex-row items-stretch justify-between gap-8 lg:gap-16">
                 
-                {/* Left Column: Image (~64% width), 16/10 aspect ratio, no border radius */}
-                <div className="w-full md:w-[64%] shrink-0">
+                {/* Left Column: Image (~64% width desktop, 58% tablet), 16/10 aspect ratio */}
+                <div className="w-full md:w-[58%] lg:w-[64%] shrink-0">
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
                     <Image
                       src={property.image}
                       alt={property.name}
                       fill
-                      sizes="(max-width: 768px) 100vw, 64vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 58vw, 64vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                       loading="lazy"
                     />
@@ -102,8 +102,8 @@ export default function SelectedProperties() {
                   </div>
                 </div>
 
-                {/* Right Column: Meta, Title, Description, and 40px Circular Button (~30% width) */}
-                <div className="w-full md:w-[30%] flex flex-col justify-between py-2 md:py-4">
+                {/* Right Column: Meta, Title, Description, and 40px Circular Button */}
+                <div className="w-full md:w-[36%] lg:w-[30%] flex flex-col justify-between py-2 md:py-4">
                   <div className="flex flex-col space-y-3">
                     {/* Meta line */}
                     <span className="font-sans text-[10px] md:text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--on-dark-muted)]">
@@ -116,7 +116,7 @@ export default function SelectedProperties() {
                     </h3>
 
                     {/* Description */}
-                    <p className="font-sans text-[12px] md:text-[13px] leading-[1.6] text-[var(--on-dark-muted)] line-clamp-2">
+                    <p className="font-sans text-[12px] md:text-[13px] leading-[1.6] text-[var(--on-dark-muted)] line-clamp-3">
                       {property.description}
                     </p>
                   </div>
