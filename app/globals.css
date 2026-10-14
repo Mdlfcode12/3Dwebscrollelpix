@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream: #F3EFE6;
+  --ink: #1A1916;
+  --ink-muted: #6B665D;
+  --taupe: #8A8378;
+  --line-light: #D9D4CA;
+  --eyebrow: #A9A59C;
+  --dark: #181818;
+  --dark-panel: #252724;
+  --on-dark: #F3EFE6;
+  --on-dark-muted: #8A8A86;
+  --line-dark: #2E2E2E;
+  --badge: #E7E4DF;
+  --wa-green: #25D366;
+
+  --background: #030303;
+  --foreground: #f4f4f5;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-taupe: var(--taupe);
+  --color-line-light: var(--line-light);
+  --color-eyebrow: var(--eyebrow);
+  --color-dark: var(--dark);
+  --color-dark-panel: var(--dark-panel);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-muted: var(--on-dark-muted);
+  --color-line-dark: var(--line-dark);
+  --color-badge: var(--badge);
+  --color-wa-green: var(--wa-green);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-serif), "Cormorant Garamond", Georgia, serif;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Custom Text Link Styling with offset underline */
+.link-editorial {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.2s ease;
+}
+.link-editorial:hover {
+  opacity: 0.7;
+}
+
+/* Custom Glassmorphism Utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-dark {
+  background: rgba(8, 8, 8, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Ultra-Premium Obsidian & Silver CTA Button */
+.cta-gradient-btn {
+  background: linear-gradient(135deg, #27272a 0%, #09090b 50%, #18181b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.cta-gradient-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* White Ambient Glow Keyframe */
+@keyframes white-pulse {
+
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: white-pulse 8s infinite ease-in-out;
 }
